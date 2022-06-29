@@ -1,10 +1,13 @@
 // App.js
 import React, { useEffect, useState } from "react";
 import "./App.css";
+import {Button, Snackbar} from '@material-ui/core';
+
 /* ethers 変数を使えるようにする*/
 import { ethers } from "ethers";
 /* ABIファイルを含むWavePortal.jsonファイルをインポートする*/
 import abi from "./utils/WavePortal.json";
+
 
 const App = () => {
   /* ユーザーのパブリックウォレットを保存するために使用する状態変数を定義 */
@@ -19,6 +22,16 @@ const App = () => {
   /* コントラクトからすべてのwavesを取得するメソッドを作成 */
   /* ABIの内容を参照する変数を作成 */
   const contractABI = abi.abi;
+
+  const [ show, setShow ] = useState(false);
+
+  const handleButtonClick = () => {
+    setShow(true);
+  };
+
+  const handleClose = () => {
+    setShow(false); // (5)
+  };
 
   const getAllWaves = async () => {
     const { ethereum } = window;
@@ -171,6 +184,7 @@ const App = () => {
           "Contract balance after wave:",
           ethers.utils.formatEther(contractBalance_post)
         );
+        handleButtonClick();
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -206,18 +220,18 @@ const App = () => {
         <br />
         {/* ウォレットコネクトのボタンを実装 */}
         {!currentAccount && (
-          <button className="waveButton" onClick={connectWallet}>
+          <Button className="waveButton" onClick={connectWallet} variant="contained" color="info">
             Connect Wallet
-          </button>
+          </Button>
         )}
         {currentAccount && (
-          <button className="waveButton">Wallet Connected</button>
+          <Button className="waveButton" variant="contained" color="info">Wallet Connected</Button>
         )}
         {/* waveボタンにwave関数を連動 */}
         {currentAccount && (
-          <button className="waveButton" onClick={wave}>
+          <Button className="waveButton" onClick={wave} variant="contained" color="primary">
             Wave at Me
-          </button>
+          </Button>
         )}
         {/* メッセージボックスを実装*/}
         {currentAccount && (
@@ -252,6 +266,12 @@ const App = () => {
               );
             })}
       </div>
+      <Snackbar
+        open={show}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        message="処理が完了しました！"
+      />
     </div>
   );
 };
